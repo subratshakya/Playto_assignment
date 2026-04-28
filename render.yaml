@@ -1,0 +1,84 @@
+databases:
+  - name: playto-postgres
+    databaseName: playto
+    user: playto
+    plan: free
+
+services:
+  - type: web
+    name: playto-backend
+    runtime: python
+    rootDir: backend
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn config.wsgi:application --bind 0.0.0.0:$PORT
+    envVars:
+      - key: DJANGO_SECRET_KEY
+        generateValue: true
+      - key: DJANGO_DEBUG
+        value: "False"
+      - key: DJANGO_ALLOWED_HOSTS
+        value: playto-backend.onrender.com
+      - key: POSTGRES_DB
+        fromDatabase:
+          name: playto-postgres
+          property: database
+      - key: POSTGRES_USER
+        fromDatabase:
+          name: playto-postgres
+          property: user
+      - key: POSTGRES_PASSWORD
+        fromDatabase:
+          name: playto-postgres
+          property: password
+      - key: POSTGRES_HOST
+        fromDatabase:
+          name: playto-postgres
+          property: host
+      - key: POSTGRES_PORT
+        fromDatabase:
+          name: playto-postgres
+          property: port
+
+  - type: worker
+    name: playto-worker
+    runtime: python
+    rootDir: backend
+    buildCommand: pip install -r requirements.txt
+    startCommand: python manage.py qcluster
+    envVars:
+      - key: DJANGO_SECRET_KEY
+        generateValue: true
+      - key: DJANGO_DEBUG
+        value: "False"
+      - key: DJANGO_ALLOWED_HOSTS
+        value: playto-backend.onrender.com
+      - key: POSTGRES_DB
+        fromDatabase:
+          name: playto-postgres
+          property: database
+      - key: POSTGRES_USER
+        fromDatabase:
+          name: playto-postgres
+          property: user
+      - key: POSTGRES_PASSWORD
+        fromDatabase:
+          name: playto-postgres
+          property: password
+      - key: POSTGRES_HOST
+        fromDatabase:
+          name: playto-postgres
+          property: host
+      - key: POSTGRES_PORT
+        fromDatabase:
+          name: playto-postgres
+          property: port
+
+  - type: web
+    name: playto-frontend
+    runtime: static
+    rootDir: frontend
+    buildCommand: npm install && npm run build
+    staticPublishPath: dist
+    envVars:
+      - key: VITE_API_BASE_URL
+        value: https://playto-backend.onrender.com

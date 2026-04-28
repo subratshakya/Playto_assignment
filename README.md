@@ -140,10 +140,42 @@ Included tests:
 
 ## Remaining submission steps
 
-- create a GitHub remote and push the repo
-- deploy backend, worker, database, and frontend
+- deploy from `render.yaml` using Render Blueprint (free)
+- run migrations and seed data on the deployed backend
 - paste the live URL and repo URL into the submission form
 
-The codebase is ready for those steps, but the actual hosted URL is not created yet in this workspace.
+## One-click deployment (Render Blueprint)
+
+This repo includes `render.yaml` that provisions:
+
+- PostgreSQL database (`playto-postgres`)
+- Django API web service (`playto-backend`)
+- Django-Q worker (`playto-worker`)
+- static React frontend (`playto-frontend`)
+
+### Deploy steps
+
+1. Push this repo to GitHub.
+2. In Render, click **New +** -> **Blueprint** and select this repo.
+3. After first deploy, open the `playto-backend` shell and run:
+
+```bash
+python manage.py migrate
+python manage.py seed_demo_data
+```
+
+4. In the frontend service (`playto-frontend`) set:
+
+```env
+VITE_API_BASE_URL=https://<your-backend-service>.onrender.com
+```
+
+5. Re-deploy the frontend service.
+
+### Submission URLs
+
+- **GitHub repo URL**: `https://github.com/subratshakya/Playto_assignment`
+- **Live deployment URL**: use the frontend URL, for example:
+  `https://playto-frontend.onrender.com`
 
 # Playto_assignment

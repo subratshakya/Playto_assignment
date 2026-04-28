@@ -1,5 +1,6 @@
+import uuid
+
 from django.core.exceptions import ObjectDoesNotExist
-from django.db import transaction
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -51,6 +52,13 @@ class PayoutCreateView(APIView):
             return Response({"detail": "X-Merchant-Id header is required."}, status=status.HTTP_400_BAD_REQUEST)
         if not idempotency_key:
             return Response({"detail": "Idempotency-Key header is required."}, status=status.HTTP_400_BAD_REQUEST)
+        try:
+            uuid.UUID(idempotency_key)
+        except ValueError:
+            return Response(
+                {"detail": "Idempotency-Key must be a valid UUID."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
 
         try:
             merchant_id = int(merchant_header)

@@ -41,14 +41,14 @@ class IdempotencyApiTests(TestCase):
             payload,
             format="json",
             HTTP_X_MERCHANT_ID=str(self.merchant.id),
-            HTTP_IDEMPOTENCY_KEY="merchant-key-1",
+            HTTP_IDEMPOTENCY_KEY="8b26df01-2c08-4dc1-9ec8-f3751120bcb6",
         )
         second_response = self.client.post(
             "/api/v1/payouts",
             payload,
             format="json",
             HTTP_X_MERCHANT_ID=str(self.merchant.id),
-            HTTP_IDEMPOTENCY_KEY="merchant-key-1",
+            HTTP_IDEMPOTENCY_KEY="8b26df01-2c08-4dc1-9ec8-f3751120bcb6",
         )
 
         self.assertEqual(first_response.status_code, 201)
@@ -104,8 +104,8 @@ class ConcurrencyPayoutTests(TransactionTestCase):
     def test_only_one_payout_succeeds_when_funds_are_insufficient(self, _mock_enqueue_payout_processing):
         barrier = threading.Barrier(2)
         with ThreadPoolExecutor(max_workers=2) as executor:
-            future_one = executor.submit(self._attempt_payout, barrier, "concurrency-1")
-            future_two = executor.submit(self._attempt_payout, barrier, "concurrency-2")
+            future_one = executor.submit(self._attempt_payout, barrier, "ab83f3f8-4cfc-438c-a406-e4bc44617ad6")
+            future_two = executor.submit(self._attempt_payout, barrier, "2f961f40-032d-4ad3-986e-b673f68e6f55")
             results = [future_one.result(), future_two.result()]
 
         successes = [result for result in results if result == "ok"]
