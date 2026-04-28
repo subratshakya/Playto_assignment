@@ -46,6 +46,11 @@ COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 RUN chmod 777 /app/backend
 RUN touch /app/backend/db.sqlite3 && chmod 666 /app/backend/db.sqlite3
 
+# Fix Nginx permissions for non-root execution
+RUN chmod 777 -R /var/log/nginx /var/lib/nginx /run
+
+ENV DJANGO_ALLOWED_HOSTS=*
+
 EXPOSE 8080
 
 CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]
