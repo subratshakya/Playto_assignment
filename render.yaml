@@ -1,9 +1,3 @@
-databases:
-  - name: playto-postgres
-    databaseName: playto
-    user: playto
-    plan: free
-
 services:
   - type: web
     name: playto-backend
@@ -18,26 +12,8 @@ services:
         value: "False"
       - key: DJANGO_ALLOWED_HOSTS
         value: playto-backend.onrender.com
-      - key: POSTGRES_DB
-        fromDatabase:
-          name: playto-postgres
-          property: database
-      - key: POSTGRES_USER
-        fromDatabase:
-          name: playto-postgres
-          property: user
-      - key: POSTGRES_PASSWORD
-        fromDatabase:
-          name: playto-postgres
-          property: password
-      - key: POSTGRES_HOST
-        fromDatabase:
-          name: playto-postgres
-          property: host
-      - key: POSTGRES_PORT
-        fromDatabase:
-          name: playto-postgres
-          property: port
+      - key: DATABASE_URL
+        sync: false
 
   - type: worker
     name: playto-worker
@@ -52,26 +28,8 @@ services:
         value: "False"
       - key: DJANGO_ALLOWED_HOSTS
         value: playto-backend.onrender.com
-      - key: POSTGRES_DB
-        fromDatabase:
-          name: playto-postgres
-          property: database
-      - key: POSTGRES_USER
-        fromDatabase:
-          name: playto-postgres
-          property: user
-      - key: POSTGRES_PASSWORD
-        fromDatabase:
-          name: playto-postgres
-          property: password
-      - key: POSTGRES_HOST
-        fromDatabase:
-          name: playto-postgres
-          property: host
-      - key: POSTGRES_PORT
-        fromDatabase:
-          name: playto-postgres
-          property: port
+      - key: DATABASE_URL
+        sync: false
 
   - type: web
     name: playto-frontend
