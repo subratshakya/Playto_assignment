@@ -179,12 +179,10 @@ DJANGO_SECRET_KEY=<strong-random-secret>
 DJANGO_DEBUG=False
 DJANGO_ALLOWED_HOSTS=<your-koyeb-backend-domain>
 DJANGO_CORS_ALLOWED_ORIGINS=https://<your-vercel-frontend-domain>
-POSTGRES_DB=<neon-database>
-POSTGRES_USER=<neon-user>
-POSTGRES_PASSWORD=<neon-password>
-POSTGRES_HOST=<neon-host>
-POSTGRES_PORT=5432
+DATABASE_URL=postgresql://<user>:<password>@<host>/<database>?sslmode=require
 ```
+
+`DATABASE_URL` is preferred for Neon. The legacy `POSTGRES_*` variables are still supported.
 
 ### 3) Deploy worker on Koyeb
 

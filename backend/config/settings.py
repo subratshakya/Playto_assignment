@@ -1,6 +1,7 @@
 from pathlib import Path
 import os
 
+import dj_database_url
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -52,7 +53,15 @@ TEMPLATES = [
 WSGI_APPLICATION = "config.wsgi.application"
 ASGI_APPLICATION = "config.asgi.application"
 
-if os.getenv("POSTGRES_DB"):
+if os.getenv("DATABASE_URL"):
+    DATABASES = {
+        "default": dj_database_url.parse(
+            os.getenv("DATABASE_URL"),
+            conn_max_age=int(os.getenv("DB_CONN_MAX_AGE", "60")),
+            ssl_require=os.getenv("DB_SSL_REQUIRE", "True").lower() == "true",
+        )
+    }
+elif os.getenv("POSTGRES_DB"):
     DATABASES = {
         "default": {
             "ENGINE": "django.db.backends.postgresql",
