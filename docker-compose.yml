@@ -1,0 +1,15 @@
+services:
+  postgres:
+    image: postgres:16
+    container_name: playto-postgres
+    environment:
+      POSTGRES_DB: playto
+      POSTGRES_USER: playto
+      POSTGRES_PASSWORD: playto
+    ports:
+      - "5432:5432"
+    volumes:
+      - playto-postgres-data:/var/lib/postgresql/data
+
+volumes:
+  playto-postgres-data:
