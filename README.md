@@ -140,42 +140,90 @@ Included tests:
 
 ## Remaining submission steps
 
-- deploy from `render.yaml` using Render Blueprint (free)
+- deploy backend + worker on Koyeb (free tier)
+- deploy Postgres on Neon (free tier)
+- deploy frontend on Vercel (free tier)
 - run migrations and seed data on the deployed backend
 - paste the live URL and repo URL into the submission form
 
-## One-click deployment (Render Blueprint)
+## Free deployment path (no payment required)
 
-This repo includes `render.yaml` that provisions:
+Use this stack:
 
-- PostgreSQL database (`playto-postgres`)
-- Django API web service (`playto-backend`)
-- Django-Q worker (`playto-worker`)
-- static React frontend (`playto-frontend`)
+- Neon: managed PostgreSQL
+- Koyeb: Django API + Django-Q worker
+- Vercel: React frontend
 
-### Deploy steps
+### 1) Create free Postgres on Neon
 
-1. Push this repo to GitHub.
-2. In Render, click **New +** -> **Blueprint** and select this repo.
-3. After first deploy, open the `playto-backend` shell and run:
+Create a Neon project and copy these values:
+
+- host
+- database
+- user
+- password
+- port (`5432`)
+
+### 2) Deploy backend API on Koyeb
+
+Create a **Web Service** from this repo:
+
+- Root directory: `backend`
+- Build command: `pip install -r requirements.txt`
+- Run command: `gunicorn config.wsgi:application --bind 0.0.0.0:$PORT`
+
+Set environment variables:
+
+```env
+DJANGO_SECRET_KEY=<strong-random-secret>
+DJANGO_DEBUG=False
+DJANGO_ALLOWED_HOSTS=<your-koyeb-backend-domain>
+DJANGO_CORS_ALLOWED_ORIGINS=https://<your-vercel-frontend-domain>
+POSTGRES_DB=<neon-database>
+POSTGRES_USER=<neon-user>
+POSTGRES_PASSWORD=<neon-password>
+POSTGRES_HOST=<neon-host>
+POSTGRES_PORT=5432
+```
+
+### 3) Deploy worker on Koyeb
+
+Create a second service from same repo with:
+
+- Root directory: `backend`
+- Build command: `pip install -r requirements.txt`
+- Run command: `python manage.py qcluster`
+
+Use the same environment variables as backend.
+
+### 4) Run migrations and seed data
 
 ```bash
 python manage.py migrate
 python manage.py seed_demo_data
 ```
 
-4. In the frontend service (`playto-frontend`) set:
+Run these once in the backend service shell on Koyeb.
+
+### 5) Deploy frontend on Vercel
+
+Import the same GitHub repo in Vercel and configure:
+
+- Framework: Vite
+- Root directory: `frontend`
+
+Environment variable:
 
 ```env
-VITE_API_BASE_URL=https://<your-backend-service>.onrender.com
+VITE_API_BASE_URL=https://<your-koyeb-backend-domain>
 ```
 
-5. Re-deploy the frontend service.
+Redeploy frontend after setting env.
 
 ### Submission URLs
 
 - **GitHub repo URL**: `https://github.com/subratshakya/Playto_assignment`
-- **Live deployment URL**: use the frontend URL, for example:
-  `https://playto-frontend.onrender.com`
+- **Live deployment URL**: use the Vercel frontend URL, for example:
+  `https://playto-assignment.vercel.app`
 
 # Playto_assignment
